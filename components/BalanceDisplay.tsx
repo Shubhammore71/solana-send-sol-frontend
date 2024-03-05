@@ -10,7 +10,6 @@ export const BalanceDisplay: FC = () => {
     useEffect(() => {
         if (!connection || !publicKey) { return }
 
-        // Ensure the balance updates after the transaction completes
         connection.onAccountChange(
             publicKey, 
             (updatedAccountInfo) => {
@@ -20,8 +19,15 @@ export const BalanceDisplay: FC = () => {
         )
 
         connection.getAccountInfo(publicKey).then(info => {
-            setBalance(info.lamports);
-        })
+            if (info) {
+                setBalance(info.lamports);
+            } else {
+                // Handle the case when info is null
+                console.warn("Account info is null.");
+            }
+        }).catch(error => {
+            console.error("Error fetching account info:", error);
+        });
     }, [connection, publicKey])
 
     return (

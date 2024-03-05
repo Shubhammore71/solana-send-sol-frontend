@@ -4,25 +4,25 @@ import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { FC, useState } from 'react'
 import styles from '../styles/Home.module.css'
 
-
 export const SendSolForm: FC = () => {
     const [txSig, setTxSig] = useState('');
     const { connection } = useConnection();
     const { publicKey, sendTransaction } = useWallet();
+
     const link = () => {
         return txSig ? `https://explorer.solana.com/tx/${txSig}?cluster=devnet` : ''
     }
 
-    const sendSol = event => {
+    const sendSol = (event: React.FormEvent<HTMLFormElement>) => { // Corrected the parameter type
         event.preventDefault()
         if (!connection || !publicKey) { return }
         const transaction = new web3.Transaction()
-        const recipientPubKey = new web3.PublicKey(event.target.recipient.value)
+        const recipientPubKey = new web3.PublicKey(event.currentTarget.recipient.value)
 
         const sendSolInstruction = web3.SystemProgram.transfer({
             fromPubkey: publicKey,
             toPubkey: recipientPubKey,
-            lamports: LAMPORTS_PER_SOL * event.target.amount.value
+            lamports: LAMPORTS_PER_SOL * parseFloat(event.currentTarget.amount.value) // Corrected the parsing
         })
 
         transaction.add(sendSolInstruction)
